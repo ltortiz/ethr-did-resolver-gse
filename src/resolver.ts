@@ -238,7 +238,7 @@ export class EthrDidResolver {
                 break
               }
               case 'knownAs': {
-                alsoKnownAs.push(this.hexToText(strip0x(currentEvent.value)));
+                alsoKnownAs.push(this.hexToText(strip0x(currentEvent.value)))
                 break
               }
             }
@@ -298,7 +298,7 @@ export class EthrDidResolver {
       assertionMethod: assertionMethod.concat(Object.values(signingRefs)),
     }
     if (alsoKnownAs.length > 0) {
-      didDocument.alsoKnownAs = alsoKnownAs;
+      didDocument.alsoKnownAs = alsoKnownAs
     }
     if (Object.values(services).length > 0) {
       didDocument.service = Object.values(services)
@@ -447,18 +447,18 @@ export class EthrDidResolver {
   hexToText(hex: string): string {
     // Asegúrate de que la cadena hexadecimal tenga una longitud par
     if (hex.length % 2 !== 0) {
-      return "";
+      return ''
     }
 
     // Convierte cada par de caracteres hexadecimales a un carácter
-    let str = '';
+    let str = ''
     for (let i = 0; i < hex.length; i += 2) {
-      let hexPair = hex.substr(i, 2); // Obtiene el par de caracteres hexadecimales
-      let charCode = parseInt(hexPair, 16); // Convierte el par a un código de carácter
-      str += String.fromCharCode(charCode); // Convierte el código de carácter a un carácter y lo añade al resultado
+      const hexPair = hex.substr(i, 2) // Obtiene el par de caracteres hexadecimales
+      const charCode = parseInt(hexPair, 16) // Convierte el par a un código de carácter
+      str += String.fromCharCode(charCode) // Convierte el código de carácter a un carácter y lo añade al resultado
     }
 
-    return str;
+    return str
   }
   build(): Record<string, DIDResolver> {
     return { ethr: this.resolve.bind(this) }
