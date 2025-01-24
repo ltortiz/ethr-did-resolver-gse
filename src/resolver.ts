@@ -122,6 +122,7 @@ export class EthrDidResolver {
 
     let controller = address
 
+    const alsoKnownAs = []
     const authentication = [`${did}#controller`]
     const assertionMethod = [`${did}#controller`]
 
@@ -152,9 +153,8 @@ export class EthrDidResolver {
         }
       }
       const validTo = event.validTo || BigInt(0)
-      const eventIndex = `${event._eventName}-${
-        (event as DIDDelegateChanged).delegateType || (event as DIDAttributeChanged).name
-      }-${(event as DIDDelegateChanged).delegate || (event as DIDAttributeChanged).value}`
+      const eventIndex = `${event._eventName}-${(event as DIDDelegateChanged).delegateType || (event as DIDAttributeChanged).name
+        }-${(event as DIDDelegateChanged).delegate || (event as DIDAttributeChanged).value}`
       if (validTo && validTo >= now) {
         if (event._eventName === eventNames.DIDDelegateChanged) {
           const currentEvent = event as DIDDelegateChanged
@@ -178,7 +178,7 @@ export class EthrDidResolver {
         } else if (event._eventName === eventNames.DIDAttributeChanged) {
           const currentEvent = event as DIDAttributeChanged
           const name = currentEvent.name //conversion from bytes32 is done in logParser
-          const match = name.match(/^did\/(pub|svc)\/(\w+)(\/(\w+))?(\/(\w+))?$/)
+          const match = name.match(/^did\/(pub|svc|knownAs)(\/(\w+))?(\/(\w+))?(\/(\w+))?$/)
           if (match) {
             const section = match[1]
             const algorithm = match[2]
@@ -237,6 +237,10 @@ export class EthrDidResolver {
                 }
                 break
               }
+              case 'knownAs': {
+                alsoKnownAs.push(this.hexToText(strip0x(currentEvent.value)));
+                break
+              }
             }
           }
         }
@@ -293,6 +297,9 @@ export class EthrDidResolver {
       authentication: authentication.concat(Object.values(auth)),
       assertionMethod: assertionMethod.concat(Object.values(signingRefs)),
     }
+    if (alsoKnownAs.length > 0) {
+      didDocument.alsoKnownAs = alsoKnownAs;
+    }
     if (Object.values(services).length > 0) {
       didDocument.service = Object.values(services)
     }
@@ -302,11 +309,11 @@ export class EthrDidResolver {
 
     return deactivated
       ? {
-          didDocument: baseDIDDocument,
-          deactivated,
-          versionId,
-          nextVersionId,
-        }
+        didDocument: baseDIDDocument,
+        deactivated,
+        versionId,
+        nextVersionId,
+      }
       : { didDocument, deactivated, versionId, nextVersionId }
   }
 
@@ -437,7 +444,22 @@ export class EthrDidResolver {
       }
     }
   }
+  hexToText(hex: string): string {
+    // Asegúrate de que la cadena hexadecimal tenga una longitud par
+    if (hex.length % 2 !== 0) {
+      return "";
+    }
 
+    // Convierte cada par de caracteres hexadecimales a un carácter
+    let str = '';
+    for (let i = 0; i < hex.length; i += 2) {
+      let hexPair = hex.substr(i, 2); // Obtiene el par de caracteres hexadecimales
+      let charCode = parseInt(hexPair, 16); // Convierte el par a un código de carácter
+      str += String.fromCharCode(charCode); // Convierte el código de carácter a un carácter y lo añade al resultado
+    }
+
+    return str;
+  }
   build(): Record<string, DIDResolver> {
     return { ethr: this.resolve.bind(this) }
   }
