@@ -238,7 +238,7 @@ export class EthrDidResolver {
                 break
               }
               case 'knownAs': {
-                alsoKnownAs.push(this.hexToText(strip0x(currentEvent.value)))
+                alsoKnownAs.push(encodeURIComponent(this.hexToText(strip0x(currentEvent.value))))
                 break
               }
             }
