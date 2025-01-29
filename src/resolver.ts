@@ -238,10 +238,7 @@ export class EthrDidResolver {
                 break
               }
               case 'knownAs': {
-                console.log(strip0x(currentEvent.value));
-                console.log(this.hexToText(strip0x(currentEvent.value)));
-                console.log(encodeURI(this.hexToText(strip0x(currentEvent.value))));
-                alsoKnownAs.push(encodeURI(this.hexToText(strip0x(currentEvent.value))))
+                alsoKnownAs.push("data:text/plain," + encodeURIComponent(this.hexToText(strip0x(currentEvent.value))))
                 break
               }
             }
