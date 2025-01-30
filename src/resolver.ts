@@ -178,7 +178,7 @@ export class EthrDidResolver {
         } else if (event._eventName === eventNames.DIDAttributeChanged) {
           const currentEvent = event as DIDAttributeChanged
           const name = currentEvent.name //conversion from bytes32 is done in logParser
-          const match = name.match(/^did\/(pub|svc|knownAs)(\/(\w+))?(\/(\w+))?(\/(\w+))?$/)
+          const match = name.match(/^did\/(pub|svc|knownAs)(?:\/(\w+))?(\/(\w+))?(\/(\w+))?$/)
           if (match) {
             const section = match[1]
             const algorithm = match[2]
